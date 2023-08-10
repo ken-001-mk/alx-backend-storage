@@ -1,17 +1,11 @@
-DROP TRIGGER IF EXISTS after_sales_order;
-DElIMITER $$
-CREATE TRIGGER after_sales_order
+DROP TRIGGER IF EXISTS reduce_quantity;
+DELIMITER $$
+CREATE TRIGGER reduce_quantity
 AFTER INSERT ON orders
-FOR EAACH ROW
+FOR EACH ROW
 BEGIN
-    DECLARE list_id INT;
-    DECLARE list_quantity INT;
-    SELECT list_id, list_quantity INTO list_id, list_quantity
-    FROM orders
-    WHERE order_id = NEW.id;
-    UPDATE lists
-    SET quantity = quantity - list_quantity
-    WHERE id = list_id;
-END
-$$
+    UPDATE items
+        SET quantity = quantity - NEW.number
+        WHERE name = NEW.item_name;
+END $$
 DELIMITER ;
